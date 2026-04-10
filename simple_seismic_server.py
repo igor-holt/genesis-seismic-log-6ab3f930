@@ -8,6 +8,9 @@ from http.server import HTTPServer, BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from datetime import datetime
 import time
+from urllib.parse import parse_qs, urlparse
+
+from celestial_ingestion import ingest_repo_to_celestial_body
 
 # System metrics
 SYSTEM_METRICS = {
@@ -24,7 +27,9 @@ SYSTEM_METRICS = {
 
 class SeismicHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == "/":
+        parsed = urlparse(self.path)
+
+        if parsed.path == "/":
             self.send_json({
                 "service": "Genesis Seismic Log",
                 "version": "1.0.0",
@@ -33,10 +38,11 @@ class SeismicHandler(BaseHTTPRequestHandler):
                 "endpoints": {
                     "live": "/api/bench/live",
                     "health": "/api/health",
-                    "seismic": "/api/seismic/status"
+                    "seismic": "/api/seismic/status",
+                    "a2a_ingest": "/api/a2a/ingest?path=."
                 }
             })
-        elif self.path == "/api/health":
+        elif parsed.path == "/api/health":
             self.send_json({
                 "status": "healthy",
                 "timestamp": datetime.utcnow().isoformat(),
@@ -47,7 +53,7 @@ class SeismicHandler(BaseHTTPRequestHandler):
                     "crystallization_verifier": "active"
                 }
             })
-        elif self.path == "/api/bench/live":
+        elif parsed.path == "/api/bench/live":
             self.send_json({
                 "timestamp": datetime.utcnow().isoformat(),
                 "system": "GTX 1650 (Diamond Vault)",
@@ -69,7 +75,7 @@ class SeismicHandler(BaseHTTPRequestHandler):
                     "ground_truth": "Ed25519 attestation active"
                 }
             })
-        elif self.path == "/api/seismic/status":
+        elif parsed.path == "/api/seismic/status":
             self.send_json({
                 "timestamp": datetime.utcnow().isoformat(),
                 "protocol": "Seismic Tree-of-Thoughts (S-ToT)",
@@ -103,6 +109,19 @@ class SeismicHandler(BaseHTTPRequestHandler):
                     "theoretical_minimum": 0.0029,
                     "efficiency_percentage": 6.9
                 }
+            })
+        elif parsed.path == "/api/a2a/ingest":
+            query = parse_qs(parsed.query)
+            repo_path = query.get("path", ["."])[0]
+            try:
+                body = ingest_repo_to_celestial_body(repo_path)
+            except ValueError as exc:
+                self.send_json({"status": "error", "error": str(exc)})
+                return
+            self.send_json({
+                "status": "ok",
+                "protocol": "A2A CelestialBody Schema",
+                "body": body
             })
         else:
             self.send_error(404)
