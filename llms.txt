@@ -1,0 +1,25 @@
+# Genesis Seismic Log — S-ToT Protocol
+
+> S-ToT Protocol: Seismic Truth-of-Thought verification with 227x cloud speedup 
+> and 2,380x energy efficiency. JAX-compatible thermodynamic computing interface.
+> Created by Igor Holt, AI Architect.
+
+## Research Contributions
+- 227x cloud speedup vs traditional verification
+- 2,380x energy efficiency improvement
+- JAX-compatible thermodynamic computing
+- Extropic integration ready
+
+## Technology
+- Thermodynamic verification protocol
+- Part of Genesis Conductor verification stack
+- Supports distributed AI agent verification
+
+## Publications
+- DOI: 10.5281/zenodo.17784838
+- Part of LID-LIFT Technical Suite
+
+## Creator
+Igor Holt — AI Architect
+ORCID: 0009-0008-8389-1297
+https://genesisconductor.io
