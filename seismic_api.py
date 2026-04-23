@@ -10,6 +10,7 @@ import json
 from datetime import datetime
 from fastapi import FastAPI
 import uvicorn
+from celestial_ingestion import ingest_repo_to_celestial_body
 
 app = FastAPI(
     title="Genesis Seismic Log API",
@@ -40,7 +41,8 @@ async def root():
         "endpoints": {
             "live": "/api/bench/live",
             "health": "/api/health",
-            "seismic": "/api/seismic/status"
+            "seismic": "/api/seismic/status",
+            "a2a_ingest": "/api/a2a/ingest?path=."
         }
     }
 
@@ -124,6 +126,20 @@ async def seismic_status():
             "theoretical_minimum": 0.0029,
             "efficiency_percentage": 6.9
         }
+    }
+
+@app.get("/api/a2a/ingest")
+async def a2a_ingest(path: str = "."):
+    """Ingest a local repository into the CelestialBody schema."""
+    try:
+        body = ingest_repo_to_celestial_body(path)
+    except ValueError as exc:
+        return {"status": "error", "error": str(exc)}
+
+    return {
+        "status": "ok",
+        "protocol": "A2A CelestialBody Schema",
+        "body": body
     }
 
 if __name__ == "__main__":

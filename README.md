@@ -47,6 +47,7 @@ This system demonstrates:
 | `GET /api/health` | System health and uptime status | [Try it](https://qmem.genesisconductor.io/api/health) |
 | `GET /api/bench/live` | Real-time benchmarking metrics | [Try it](https://qmem.genesisconductor.io/api/bench/live) |
 | `GET /api/seismic/status` | S-ToT protocol verification status | [Try it](https://qmem.genesisconductor.io/api/seismic/status) |
+| `GET /api/a2a/ingest?path=.` | Converts a repo into `CelestialBody` JSON | Local endpoint |
 
 ### Example Usage
 
@@ -122,6 +123,27 @@ See [`thrml_seismic_bridge.py`](./thrml_seismic_bridge.py) for JAX-accelerated i
 - `apply_seismic_shock()`: Thermal perturbation via Langevin dynamics
 - `verify_crystallization()`: Euclidean divergence measurement
 - `run_protocol()`: Full 4-phase S-ToT loop
+
+## A2A Ingestion Layer (CelestialBody Schema)
+
+The repository now includes an A2A ingestion layer that transforms raw agent repositories into a normalized `CelestialBody` object with:
+
+- **Mass**: file count, estimated LOC, language distribution
+- **Atmosphere**: intent and heuristic novelty/safety/determinism scores
+- **Gravity**: influence and orbit class
+- **Seismic Metadata**: stress-test readiness and invariance contract
+
+Reference implementation: [`celestial_ingestion.py`](./celestial_ingestion.py).
+
+Use either server implementation:
+
+```bash
+# stdlib server
+curl "http://localhost:8003/api/a2a/ingest?path=." | jq
+
+# FastAPI server
+curl "http://localhost:8003/api/a2a/ingest?path=." | jq
+```
 
 ## Architecture
 
